@@ -20,9 +20,9 @@ subjectNo = 1:12;
 pxx_mat = zeros(length(subjectNo),201);
 pxx_all = zeros(4,201);
 
-for j = 2
-    for k = 1:4
-        for i = 1:length(subjectNo)
+for j = 1
+    for k = 1
+        for i = 1 %:length(subjectNo)
             index_Sub = subjectNo(i);
             if index_Sub < 10
                 subjectID = ['20' num2str(index_Sub)];
@@ -60,9 +60,9 @@ for j = 2
             peak_MVC = max(MVC_1_conv(10:length(MVC_1)));
             
             EMG_1 = Data_temp(1:endTime,muscle(1));
-            EMG_1_conv = conv(EMG_1,gausswin(1*Fs));
+            EMG_1_conv = conv(EMG_1,gausswin(0.1*Fs));
             EMG_1_amp = EMG_1_conv(1:length(EMG_1));
-            EMG_1_amp = EMG_1_amp./peak_MVC;
+            %EMG_1_amp = EMG_1_amp./peak_MVC;
             
             EMG_1_mean(i) = mean(EMG_1_amp(5*Fs:end));
             
@@ -71,7 +71,7 @@ for j = 2
             peak_MVC = max(MVC_2_conv(10:length(MVC_2)));
             
             EMG_2 = Data_temp(1:endTime,muscle(2));
-            EMG_2_conv = conv(EMG_2,gausswin(1*Fs));
+            EMG_2_conv = conv(EMG_2,gausswin(0.1*Fs));
             EMG_2_amp = EMG_2_conv(1:length(EMG_2));
             EMG_2_amp = EMG_2_amp./peak_MVC;
             
@@ -109,14 +109,14 @@ for j = 2
     
 end
 
-figure(1)
-boxplot(EMG_1_mean_all)
-
-figure(2)
-boxplot(EMG_2_mean_all)
-
-figure(3)
-boxplot(EMG_3_mean_all)
-
-figure(4)
-boxplot(EMG_4_mean_all)
+% figure(1)
+% boxplot(EMG_1_mean_all)
+% 
+% figure(2)
+% boxplot(EMG_2_mean_all)
+% 
+% figure(3)
+% boxplot(EMG_3_mean_all)
+% 
+% figure(4)
+% boxplot(EMG_4_mean_all)

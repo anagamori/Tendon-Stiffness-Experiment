@@ -1,5 +1,3 @@
-
-
 rm(list = ls())
 
 library(R.matlab)
@@ -22,17 +20,22 @@ for (i in 1:2){
     dataCoV <- dataCoV.Temp$CoV.all
     dataCoV.Fl.vec = as.vector(dataCoV)
   }
-  else {
+  else{
     dataName <- paste(dataFile,'CoV_all_Ex.mat',sep = "")
     dataCoV.Temp <- readMat(dataName)
     dataCoV <- dataCoV.Temp$CoV.all
     dataCoV.Ex.vec = as.vector(dataCoV)
   }
 }
+
 dataCoV.All <- c(dataCoV.Fl.vec,dataCoV.Ex.vec)
 condition = rep(1:4,each = 12)
 muscle = rep(1:2,each = 48)
 dataCoV.All.mat <- cbind(dataCoV.Fl.vec,dataCoV.Ex.vec,condition)
 z = bw2list(dataCoV.All.mat,3,c(1,2))
+wwtrim(4,2,z,tr = 0)
+
 rmanova(dataCoV,tr = 0)
 rmmcp(dataCoV,tr=0)
+
+wwtrim(4,2,z,tr = 0)

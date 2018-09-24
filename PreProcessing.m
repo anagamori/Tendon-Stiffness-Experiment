@@ -1,8 +1,8 @@
-function [ProcessedData] = PreProcessing(Data)
+function [ProcessedData] = PreProcessing(Data,frequency)
    
     Fs = 1000;
     F_Nyquest = Fs/2;
-    [b,a] = butter(10,150/F_Nyquest,'high');
+    [b,a] = butter(10,frequency/F_Nyquest,'high');
     [nrow,ncol] = size(Data);
     ProcessedData = zeros(nrow,ncol);
     for i = 1:ncol

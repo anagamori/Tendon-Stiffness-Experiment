@@ -20,8 +20,8 @@ subjectNo = 1:12;
 Cxy_mat = zeros(length(subjectNo),1001);
 Cxy_all = zeros(4,1001);
 
-for j = 2
-    for k = 1:4
+for j = 1:2
+    for k = 1
         for i = 1:length(subjectNo)
             index_Sub = subjectNo(i);
             if index_Sub < 10
@@ -52,17 +52,18 @@ for j = 2
             EMG_2 = Data_temp(:,muscle(2));
             EMG_2 = EMG_2-mean(EMG_2);
             
-            [Cxy,freq] = mscohere(EMG_1,EMG_2,gausswin(5*Fs),2.5*Fs,0:0.1:100,Fs);
+            [Cxy,freq] = mscohere(EMG_1,EMG_2,gausswin(2*Fs),1*Fs,0:0.1:100,Fs);
             Cxy_mat(i,:) = smooth(Cxy,10);          
             save(['Cxy_' num2str(j) '_' num2str(k)],'Cxy_mat')
         end
         Cxy_all(k,:) = smooth(mean(atanh(Cxy_mat)),10);                       
     end
-    
+    figure(1)
+    plot(freq,tanh(Cxy_all))
+    hold on
 end
 
-figure(1)
-plot(freq,tanh(Cxy_all))
+
 
 %%
 j = 1;

@@ -64,8 +64,7 @@ for j = 2
             for n = 1:length(angles)-1
                 index = find(Force_angle>=angles(n)&Force_angle<=angles(n+1));
                 meanAmp_low(n) = mean(Force_low(index));
-                meanAmp(n) = mean(Force_high(index));
-                
+                meanAmp(n) = mean(Force_high(index));              
             end
             p2p = max(meanAmp_low)-min(meanAmp_low);
             Amp_low_mat(i,:) = meanAmp_low;

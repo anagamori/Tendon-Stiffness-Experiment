@@ -16,17 +16,16 @@ Fs = 1000;
 
 pxxAll = zeros(4,201);
 endTime = 50*Fs;
-t = [1:50*Fs]./Fs;
 
-timeWindow = 2*Fs;
-timeVector = 1:timeWindow:length(t);
 
-CoV_mat = zeros(4,length(timeVector)-1);
-rms_mat = zeros(4,length(timeVector)-1);
+CoV_mat = zeros(12,4);
+rms_mat = zeros(12,4);
+
+count = 1;
 
 subjectNo = 1:12;
-for j = 2
-    for k = 1:4
+for j = 1:2   
+    for k = 2:2:4        
         for i = 1:length(subjectNo)
             index_Sub = subjectNo(i);
             if index_Sub < 10
@@ -48,41 +47,22 @@ for j = 2
             cd (codeDirectory)
             
             Force = Data(1:endTime,end);
-            
-            CoV(i) = std(Force)/mean(Force);
-            RMS(i) = rms(Force-mean(Force));
-            
-            for t = 1:length(timeVector)-1
-                meanForce = mean(Force(timeVector(t):timeVector(t+1)));
-                SDForce = std(Force(timeVector(t):timeVector(t+1)));
-                CoV_vec(t) = SDForce/meanForce;
-                rms_vec(t) = rms(Force(timeVector(t):timeVector(t+1))-meanForce);
-            end
-            CoV_mat(i,:) = CoV_vec;
-            rms_mat(i,:) = rms_vec;
-            
-        end
-        
-
-        CoV_cond(:,k) = mean(CoV_mat,2);
-        rms_cond(:,k) = mean(rms_mat,2);
-        
-        CoV_all(:,k) = CoV;
-        RMS_all(:,k) = RMS;
-    end
-    
+                    
+            CoV_mat(i,count) = std(Force)/mean(Force);
+        end      
+        count = count + 1;
+    end    
 end
 
-save('CoV_all_Ex','CoV_all')
-save('RMS_all','RMS_all')
+CoV_mat = CoV_mat*100;
+CoV_plot = [CoV_mat(:,2) CoV_mat(:,1) CoV_mat(:,4) CoV_mat(:,3)];
+%
+%save('CoV_all','CoV_plot')
 
-figure(2)
-boxplot(CoV_cond)
-figure(3)
-boxplot(CoV_all)
-figure(4)
-boxplot(RMS_all)
 
+figure(1)
+boxplot(CoV_plot)
+ylabel('CoV (%)','FontSize',14)
 
 
 

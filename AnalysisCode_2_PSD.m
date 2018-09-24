@@ -1,9 +1,8 @@
-%--------------------------------------------------------------------------
+ %--------------------------------------------------------------------------
 % Analysis code for tendon stiffness
 %   PSD of force
 % Last update:2/17/18
-% Note: Study No. 200
-%       Run AnalysisCode_1 before this
+% 
 %--------------------------------------------------------------------------
 
 close all
@@ -12,7 +11,7 @@ clc
 
 Fs = 1000;
 [b_f_high,a_f_high] = butter(4,[5,15]/(Fs/2),'bandpass');
-[b_f_low,a_f_low] = butter(4,3/(Fs/2),'low');
+[b_low,a_low] = butter(4,0.1/(Fs/2),'high');
 
 
 endTime = 50*Fs;
@@ -46,15 +45,16 @@ for j = 1
             cd (codeDirectory)
             
             Force = Data(1:endTime,end);
+            %Force = filtfilt(b_low,a_low,Force);
             Force = Force - mean(Force);
             
             [pxx,freq] = pwelch(Force,gausswin(5*Fs),2.5*Fs,0:0.1:20,Fs,'power');
-            %pxx = pxx./sum(pxx);
+            pxx = pxx;
             CD_low(i) = mean(pxx(21:51));
             CD_high(i) = mean(pxx(31:61));
-            PT(i) = mean(pxx(61:151));
+            PT(i) = mean(pxx(81:151));
             
-            pxx_mat(i,:) = pxx;
+            pxx_mat(i,:) = pxx; 
             
             
         end
@@ -84,10 +84,13 @@ title('3 - 6 Hz')
 
 figure(4)
 boxplot(PT_all)
-title('6 - 12 Hz')
+title('6 - 15 Hz')
 
 %%
-j = 1;
+% close all
+% clear all
+% clc
+j = 2;
 load(['pxx_' num2str(j) '_' num2str(2)])
 pxx_mat_1 = pxx_mat;
 load(['pxx_'  num2str(j) '_' num2str(4)])
@@ -102,10 +105,18 @@ end
 
 figure(5)
 subplot(2,1,1)
-plot(freq,mean(pxx_mat_1))
+plot(freq,mean(pxx_mat_1),'LineWidth',1)
 hold on 
-plot(freq,mean(pxx_mat_2))
+plot(freq,mean(pxx_mat_2),'LineWidth',1)
+ylabel('Power (%MVC^2)','FontSize',14)
 legend('High Gain','Low Gain')
+xlim([4 20])
+set(gca,'TickDir','out')
+
 %plot(freq,mean(pxx_mat_1-pxx_mat_2))
 subplot(2,1,2)
-plot(freq,p)
+plot(freq,p,'LineWidth',1)
+xlabel('Frequency (Hz)','FontSize',14)
+ylabel('p-value','FontSize',14)
+set(gca,'TickDir','out')
+%xlim([5 20])
