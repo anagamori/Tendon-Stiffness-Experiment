@@ -23,6 +23,7 @@ subjectNo = 1:12;
 
 windowSize = 5*Fs;
 overlap = 0;
+nboostrap = 2000;
 count = 1;
 
 
@@ -80,9 +81,9 @@ for j = 1:2
                 rho_vec(n) = corr(Force_amp_mat(n,:)',Coh_alpha_amp_mat(n,:)');
             end
             rho_vec_mean = mean(atanh(rho_vec));
-            index_1 = datasample(1:size(Coh_alpha_amp_mat,1),1000);
-            index_2 = datasample(1:size(Coh_alpha_amp_mat,1),1000);
-            for m = 1:1000
+            index_1 = datasample(1:size(Coh_alpha_amp_mat,1),nboostrap);
+            index_2 = datasample(1:size(Coh_alpha_amp_mat,1),nboostrap);
+            for m = 1:nboostrap
                 rho_shuffle_vec(m) = corr(Force_amp_mat(index_1(m),:)',Coh_alpha_amp_mat(index_1(m),:)');
             end
             rho_shuffle_vec_mean = mean(atanh(rho_shuffle_vec));
