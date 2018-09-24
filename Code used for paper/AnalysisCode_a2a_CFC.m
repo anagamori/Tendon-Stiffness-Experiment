@@ -21,6 +21,8 @@ subjectNo = 1:12;
 
 [b_f_low,a_f_low] = butter(4,5/(Fs/2),'low');
 
+windowSize = 5*Fs;
+overlap = 0;
 count = 1;
 
 
@@ -63,17 +65,31 @@ for j = 1:2
             Force_phase = hilbert(Force_low-mean(Force_low)); % apply hilbert transform
             Force_amp = abs(Force_phase); % calculate amplitude
             Force_amp = Force_amp - mean(Force_amp);  % remove mean
-            
+            Force_amp_mat = segmentation(Force_amp,windowSize,overlap); %semgent the signal
             % Data processing for alpha-band coherence
             [time,freqs,Coh] = waveletCoherence(EMG_1,EMG_2,Fs,0.5:0.5:100,5); % wavelet coherence
             
             Coh_alpha = mean(atanh(sqrt(Coh(16:30,:)))); % average coherence between 8-15 Hz
             Coh_alpha = Coh_alpha - mean(Coh_alpha); % remove mean      
-            phase_Coh_alpha = hilbert(Coh_alpha); % apply hilbert transform
-            amp_Coh_alpha = abs(phase_Coh_alpha); % calculate amplitude
-            amp_Coh_alpha = amp_Coh_alpha - mean(amp_Coh_alpha); % remove mean
+            Coh_alpha_phase = hilbert(Coh_alpha); % apply hilbert transform
+            Coh_alpha_amp = abs(Coh_alpha_phase); % calculate amplitude
+            Coh_alpha_amp = Coh_alpha_amp - mean(Coh_alpha_amp); % remove mean
+            Coh_alpha_amp_mat = segmentation(Coh_alpha_amp,windowSize,overlap); %semgent the signal
+            
+            for n = 1:size(Coh_alpha_amp_mat,1)
+                rho_vec(n) = corr(Force_amp_mat(n,:)',Coh_alpha_amp_mat(n,:)');
+            end
+            rho_vec_mean = mean(atanh(rho_vec));
+            index_1 = datasample(1:size(Coh_alpha_amp_mat,1),1000);
+            index_2 = datasample(1:size(Coh_alpha_amp_mat,1),1000);
+            for m = 1:1000
+                rho_shuffle_vec(m) = corr(Force_amp_mat(index_1(m),:)',Coh_alpha_amp_mat(index_1(m),:)');
+            end
+            rho_shuffle_vec_mean = mean(atanh(rho_shuffle_vec));
+            rho_shuffle_vec_std = std(atanh(rho_shuffle_vec));
+            rho_z(count,i) = (rho_vec_mean - rho_shuffle_vec_mean)/rho_shuffle_vec_std;
             % amplitude-to-amplitude cross-freqeuncy coupling
-            [rho(count,i),pval(count,i)] = corr(Force_amp,amp_Coh_alpha'); % pearson's correlation coefficient                   
+            [rho(count,i),pval(count,i)] = corr(Force_amp,Coh_alpha_amp'); % pearson's correlation coefficient                   
             %[r(i,:),lag] = xcorr(Force_amp,amp_Coh_alpha',1000,'coeff');
             
         end
