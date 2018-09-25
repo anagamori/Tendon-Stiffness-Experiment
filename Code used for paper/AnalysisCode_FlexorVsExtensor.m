@@ -22,15 +22,15 @@ L = (50*Fs+1-startTime)/windowSize;
 for j = 1
     for k = 2 %:2:4
         % loop through subjects
-        for i = 4 %1:length(subjectNo)
+        for i = 1:length(subjectNo)
             index_Sub = subjectNo(i);
             if index_Sub < 10
                 subjectID = ['20' num2str(index_Sub)];
             else
                 subjectID = ['2' num2str(index_Sub)];
             end
-            dataDirectory = ['/Users/akiranagamori/Documents/GitHub/Tendon-Stiffness-Experiment/Subject' subjectID '/'];
-            codeDirectory = '/Users/akiranagamori/Documents/GitHub/Tendon-Stiffness-Experiment/Code used for paper';
+            dataDirectory = ['/Users/akira/Documents/GitHub/Tendon-Stiffness-Experiment/Subject' subjectID '/'];
+            codeDirectory = '/Users/akira/Documents/GitHub/Tendon-Stiffness-Experiment/Code used for paper';
             
             if j == 1
                 condition = ['Fl_' num2str(k)];
@@ -48,9 +48,9 @@ for j = 1
             Data_temp = Data;
             cd (codeDirectory)
                        
-            EMG_1 = Data_temp(startTime:end,muscle(1));
+            EMG_1 = Data_temp(:,muscle(1));
             EMG_1 = EMG_1-mean(EMG_1);            
-            EMG_2 = Data_temp(startTime:end,muscle(2));
+            EMG_2 = Data_temp(:,muscle(2));
             EMG_2 = EMG_2-mean(EMG_2);
                       
             [Coh,frequencies] = mscohere(EMG_1,EMG_2,rectwin(windowSize),0,0:0.5:500,Fs);

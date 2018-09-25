@@ -20,7 +20,7 @@ for i = 1:length(startPoints)
    % Store the amplitude of input signal at each frquency 
    [corr,lags] = xcorr(dataSegments_1(i,:)-mean(dataSegments_1(i,:)),dataSegments_2(i,:)-mean(dataSegments_2(i,:)),1000,'coeff');
    corr_mat(i,:) = corr;
-   rho(i) = max(corr(901:1001)); 
+   rho(i) = max(corr(801:1201)); 
 end
 
 end
