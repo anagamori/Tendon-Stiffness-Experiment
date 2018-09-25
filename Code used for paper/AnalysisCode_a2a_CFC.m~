@@ -26,6 +26,7 @@ overlap = 0;
 nboostrap = 2000;
 count = 1;
 
+
 for j = 1
     for k = 2:2:4
         for i = 1:length(subjectNo)
@@ -83,7 +84,7 @@ for j = 1
             end
             rho_vec_mean = mean(atanh(rho_vec));
             
-            % Create a shuffled data set to create a null distribution
+            % Create a shuff
             index_1 = datasample(1:size(Coh_alpha_amp_mat,1),nboostrap);
             index_2 = datasample(1:size(Coh_alpha_amp_mat,1),nboostrap);
             for m = 1:nboostrap

@@ -35,8 +35,8 @@ for j = 1
             else
                 subjectID = ['2' num2str(index_Sub)];
             end
-            dataDirectory = ['/Users/akiranagamori/Documents/GitHub/Tendon-Stiffness-Experiment/Subject' subjectID '/'];
-            codeDirectory = '/Users/akiranagamori/Documents/GitHub/Tendon-Stiffness-Experiment/Code used for paper';
+            dataDirectory = ['/Users/akira/Documents/GitHub/Tendon-Stiffness-Experiment/Subject' subjectID '/'];
+            codeDirectory = '/Users/akira/Documents/GitHub/Tendon-Stiffness-Experiment/Code used for paper';
             
             if j == 1
                 condition = ['Fl_' num2str(k)];
@@ -62,28 +62,38 @@ for j = 1
             
             % Data processing for force signal 
             Force_low = filtfilt(b_f_low,a_f_low,Force); % apply low-pass filter at 5Hz
-            Force_phase = hilbert(Force_low-mean(Force_low)); % apply hilbert transform
-            Force_amp = abs(Force_phase); % calculate amplitude
-            Force_amp = Force_amp - mean(Force_amp);  % remove mean
-            Force_amp_mat = segmentation(Force_amp,windowSize,overlap); %semgent the signal
-           
+            Force_phase = hilbert(Force_low-mean(Force_low)); % apply hilbert transform           
+            Force_phase_mat = segmentation(Force_phase,windowSize,overlap); %semgent the signal
+        
             
             [time,freqs,Coh] = waveletCoherence(EMG_1,EMG_2,Fs,0.5:0.5:100,5);
             
             Coh_alpha = mean(atanh(sqrt(Coh(16:30,:)))); % average coherence between 8-15 Hz
             Coh_alpha = Coh_alpha - mean(Coh_alpha); % remove mean      
             Coh_alpha_phase = hilbert(Coh_alpha); % apply hilbert transform
-            Coh_alpha_amp = abs(Coh_alpha_phase); % calculate amplitude
-            Coh_alpha_amp = Coh_alpha_amp - mean(Coh_alpha_amp); % remove mean
-            Coh_alpha_amp_mat = segmentation(Coh_alpha_amp,windowSize,overlap); %semgent the signal
+            Coh_alpha_phase_mat = segmentation(Coh_alpha_phase,windowSize,overlap); %semgent the signal
             
-            for n = 1:size(Coh_alpha_amp_mat,1)
-                phaseLocking_vec(n) = (1/length(Force_amp_mat(n,:))) ...
-                    *abs(sum(exp(1i*(angle(Force_amp_mat(n,:))-angle(Coh_alpha_amp_mat(n,:))))));
+            for n = 1:size(Coh_alpha_phase_mat,1)
+                phaseLocking_vec(n) = (1/length(Force_phase_mat(n,:))) ...
+                    *abs(sum(exp(1i*(angle(Force_phase_mat(n,:))-angle(Coh_alpha_phase_mat(n,:))))));
+            end                      
+            
+            index_1 = datasample(1:size(Coh_alpha_phase_mat,1),nboostrap);
+            index_2 = datasample(1:size(Coh_alpha_phase_mat,1),nboostrap);
+            for m = 1:nboostrap
+                phaseLocking_shuffle_vec(m) = (1/length(Force_phase_mat(index_1(m),:))) ...
+                    *abs(sum(exp(1i*(angle(Force_phase_mat(index_1(m),:))-angle(Coh_alpha_phase_mat(index_2(m),:))))));
             end
+            phaseLocking_shuffle_vec_mean = mean(atanh(phaseLocking_shuffle_vec));
+            phaseLocking_shuffle_vec_std = std(atanh(phaseLocking_shuffle_vec));
+            
             phaseLocking_vec_mean = mean(atanh(phaseLocking_vec));
-            phaseLocking_amp(count,i) = phaseLocking_vec_mean;
+            phaseLocking_amp(count,i) = (phaseLocking_vec_mean-phaseLocking_shuffle_vec_mean)/phaseLocking_shuffle_vec_std;
+            
+            phaseLocking(count,i) = (1/length(Force_phase)) ...
+                    *abs(sum(exp(1i*(angle(Force_phase)-angle(Coh_alpha_phase')))));
         end
+        
         count = count + 1;
     end
     
@@ -91,12 +101,24 @@ for j = 1
    
 end
 
-PhaseLocking_plot = [phaseLocking_amp(2,:); phaseLocking_amp(1,:); phaseLocking_amp(4,:); phaseLocking_amp(3,:)];
+
+%%
+phaseLocking_plot = [phaseLocking(2,:); phaseLocking(1,:)];
+phaseLocking_z_plot = [phaseLocking_amp(2,:); phaseLocking_amp(1,:)]; % phaseLocking_amp(4,:); phaseLocking_amp(3,:)];
 
 
 figure(1)
-boxplot(PhaseLocking_plot')
+boxplot(phaseLocking_plot')
 ylabel('Phase-locking value','FontSize',14)
+set(gca,'TickDir','out')
+set(gca,'TickDir','out')
+set(gca, 'FontName', 'Arial')
+set(gca,'LineWidth',1)
+box off
+
+figure(2)
+boxplot(phaseLocking_z_plot')
+ylabel('Z-score phase-locking value','FontSize',14)
 set(gca,'TickDir','out')
 set(gca,'TickDir','out')
 set(gca, 'FontName', 'Arial')
