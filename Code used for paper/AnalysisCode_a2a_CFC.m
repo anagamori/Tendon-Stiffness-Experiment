@@ -27,7 +27,7 @@ nboostrap = 2000;
 count = 1;
 
 
-for j = 1:2
+for j = 1
     for k = 2:2:4
         for i = 1:length(subjectNo)
             index_Sub = subjectNo(i);
@@ -36,8 +36,8 @@ for j = 1:2
             else
                 subjectID = ['2' num2str(index_Sub)];
             end
-            dataDirectory = ['/Users/akiranagamori/Documents/GitHub/Tendon-Stiffness-Experiment/Subject' subjectID '/'];
-            codeDirectory = '/Users/akiranagamori/Documents/GitHub/Tendon-Stiffness-Experiment/Code used for paper';
+            dataDirectory = ['/Users/akira/Documents/GitHub/Tendon-Stiffness-Experiment/Subject' subjectID '/'];
+            codeDirectory = '/Users/akira/Documents/Github/Tendon-Stiffness-Experiment/Code used for paper';
             
             if j == 1
                 condition = ['Fl_' num2str(k)];
@@ -88,7 +88,8 @@ for j = 1:2
             end
             rho_shuffle_vec_mean = mean(atanh(rho_shuffle_vec));
             rho_shuffle_vec_std = std(atanh(rho_shuffle_vec));
-            rho_z(count,i) = (rho_vec_mean - rho_shuffle_vec_mean)/rho_shuffle_vec_std;
+            rho_z(count,i) = rho_vec_mean; %(rho_vec_mean - rho_shuffle_vec_mean)/rho_shuffle_vec_std;
+            rho_shuffle_z(count,i) = rho_shuffle_vec_mean;
             % amplitude-to-amplitude cross-freqeuncy coupling
             [rho(count,i),pval(count,i)] = corr(Force_amp,Coh_alpha_amp'); % pearson's correlation coefficient                   
             %[r(i,:),lag] = xcorr(Force_amp,amp_Coh_alpha',1000,'coeff');
@@ -101,8 +102,9 @@ for j = 1:2
    
 end
 
-rho_plot = [rho(2,:); rho(1,:); rho(4,:); rho(3,:)];
-pval_plot = [pval(2,:); pval(1,:); pval(4,:); pval(3,:)];
+%%
+rho_plot = [rho(2,:); rho(1,:)];%; rho(4,:); rho(3,:)];
+rho_z_plot = [tanh(rho_z(2,:)); tanh(rho_z(1,:))]; % rho_z(4,:); rho_z(3,:)];
 %%
 figure(1)
 boxplot(rho_plot')
@@ -114,7 +116,8 @@ set(gca,'LineWidth',1)
 box off
 
 figure(2)
-bar([length(find(pval(2,:)<0.05)) length(find(pval(1,:)<0.05)) length(find(pval(4,:)<0.05)) length(find(pval(3,:)<0.05))])
+%bar([length(find(pval(2,:)<0.05)) length(find(pval(1,:)<0.05)) length(find(pval(4,:)<0.05)) length(find(pval(3,:)<0.05))])
+boxplot(rho_z_plot')
 ylabel('Amplitude-amplitude CFC','FontSize',14)
 set(gca,'TickDir','out')
 set(gca,'TickDir','out')
