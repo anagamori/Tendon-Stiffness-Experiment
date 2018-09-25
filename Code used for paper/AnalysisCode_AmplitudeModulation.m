@@ -1,6 +1,6 @@
 %--------------------------------------------------------------------------
 % Author: Akira Nagamori
-% Last update: 8/23/2018
+% Last update: 9/25/2018
 % Descriptions:
 %   Plot 1) coherence spectrum between EMGs of wrist flexors and extensors
 %        2) boxplot for average coherence between 8-15 Hz
@@ -18,7 +18,7 @@ startTime = 10*Fs+1;
 subjectNo = 1:12; % Subject ID
 count = 1; % counter to track the number of iterations in for-loop
 
-windowSize = 2*Fs;
+windowSize = 5*Fs;
 [b_high,a_high] = butter(4,0.1/(Fs/2),'high');
 [b,a] = butter(4,2/(Fs/2),'low');
 
@@ -79,7 +79,7 @@ for j = 1 %:2
             [cor_Force_2(i,:),~] = xcorr(Force_low,EMG_2_env,1000,'coeff');
             [cor(i,:),lags] = xcorr(EMG_1_env,EMG_2_env,1000,'coeff');
             
-            max_cor(i) = max(cor(i,901:1001));
+            max_cor(i) = max(cor(i,801:1201));
             max_cor_Force(i) = max(cor_Force(i,1001:1400));
             max_cor_Force_2(i) = max(cor_Force_2(i,1001:1400));
             
